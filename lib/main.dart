@@ -14,7 +14,17 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple, // background (button) color
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.all(15),
+            elevation: 0,
+
+            // foreground (text) color
+          ),
+        ),
       ),
       home: const MatamaskScreen(),
     );

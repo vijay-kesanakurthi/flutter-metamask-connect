@@ -16,20 +16,26 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
   var connector = WalletConnect(
       bridge: 'https://bridge.walletconnect.org',
       clientMeta: const PeerMeta(
-          name: 'Wollet Connect',
+          name: 'Wallet Connect',
           description: 'An app for connecting to metamask',
           url: 'https://walletconnect.org',
-          icons: ['']));
+          icons: [
+            'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
+          ]));
 
   var _session, _uri, _signature, session;
 
   loginUsingMetamask(BuildContext context) async {
     if (!connector.connected) {
       try {
-        session = await connector.createSession(onDisplayUri: (uri) async {
-          _uri = uri;
-          await launchUrlString(uri, mode: LaunchMode.externalApplication);
-        });
+        session = await connector.createSession(
+            chainId: 5,
+            onDisplayUri: (uri) async {
+              _uri = uri;
+              print(uri);
+              await launchUrlString(uri, mode: LaunchMode.externalApplication);
+            });
+        print("Came");
         print(session.accounts[0]);
         setState(() {
           _session = session;
@@ -46,6 +52,7 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
         'connect',
         (session) => setState(
               () {
+                print("Connected");
                 _session = _session;
               },
             ));
@@ -59,6 +66,7 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
     connector.on(
         'disconnect',
         (payload) => setState(() {
+              print("diconnected");
               _session = null;
             }));
     return Scaffold(
@@ -79,14 +87,7 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
                       child: Column(
                     children: [
                       const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        'Connect to Metamask',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold),
+                        height: 180,
                       ),
                       const Spacer(),
                       Padding(
@@ -99,7 +100,7 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
                               height: 200,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.purple.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               child: Column(
@@ -115,20 +116,25 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
-                                  const Text(
-                                    'You can login your metamask wallet or create your wallet from here',
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'You can login or create your wallet ',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.purpleAccent.shade400,
+                                      fontSize: 22,
                                     ),
                                   ),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 14),
                                   ElevatedButton(
                                     onPressed: () =>
                                         loginUsingMetamask(context),
                                     child: const Text(
-                                      'Create Wallet',
+                                      'Connect Wallet',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                      ),
                                     ),
                                   )
                                 ],
@@ -138,13 +144,15 @@ class _MatamaskScreenState extends State<MatamaskScreen> {
                         ),
                       ),
                       const SizedBox(
-                        height: 100,
+                        height: 80,
                       )
                     ],
                   ))
                 ],
               )
             : Nextscreenui(
+                connect: connector,
+                session: session,
                 walletaddress: session.accounts[0].toString(),
               ));
   }
